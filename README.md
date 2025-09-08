@@ -9,7 +9,9 @@
 
 ### PDF conversion API interface
 
-Imprint provides ...
+Imprint provides a simple and intuitive interface for converting HTML documents to PDF via various 3rd party services.
+
+PDF generation is a notoriously difficult task requiring access to complex systems that require significant setup and resources. A number of services exist to handle this task, but each has their own unique API and set of features - Imprint fills the gap, abstracting the complexity away and making the whole process... less awful.
 
 ---
 
