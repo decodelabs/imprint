@@ -13,12 +13,15 @@ use DecodeLabs\Atlas\File;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Hydro;
 use DecodeLabs\Imprint\Adapter;
-use DecodeLabs\Imprint\Options;
 use DecodeLabs\Imprint\Options\Orientation;
 use DecodeLabs\Imprint\Options\PageSize;
 use DecodeLabs\Imprint\Options\Quality;
 use DecodeLabs\Imprint\Options\ResponseMode;
 use DecodeLabs\Imprint\Options\Unit;
+use DecodeLabs\Imprint\Request;
+use DecodeLabs\Imprint\Request\Target;
+use DecodeLabs\Imprint\Request\Target\LocalFile as LocalFileTarget;
+use DecodeLabs\Imprint\Request\Target\TempFile as TempFileTarget;
 
 class PdfLayer implements Adapter
 {
@@ -29,182 +32,163 @@ class PdfLayer implements Adapter
     ) {
     }
 
-    public function convertUrl(
-        string $url,
-        Options $options
-    ): File {
-        return $this->convert(
-            input: $url,
-            options: $options
-        );
-    }
-
-    public function convertFile(
-        File $file,
-        Options $options
-    ): File {
-        return $this->convert(
-            input: $file,
-            options: $options
-        );
-    }
-
-    private function convert(
-        string|File $input,
-        Options $options
-    ): File {
+    public function convert(
+        Request $request
+    ): Target {
         $postData = [];
         $data = ['access_key' => $this->apiKey];
 
-        if ($input instanceof File) {
+        if ($request->source->value instanceof File) {
             if ($this->secretKey !== null) {
                 throw Exceptional::Setup(
                     message: 'Secret keyword cannot be used with file input'
                 );
             }
 
-            $postData['document_html'] = $input->getContents();
+            $postData['document_html'] = $request->source->value->getContents();
         } else {
-            $data['document_url'] = $input;
+            $data['document_url'] = $url = $request->source->value;
 
             if ($this->secretKey !== null) {
-                $data['secret_key'] = md5($input . $this->secretKey);
+                $data['secret_key'] = md5($url . $this->secretKey);
             }
         }
 
-        if ($options->fileName !== null) {
-            $data['document_name'] = $options->fileName;
+        $data['document_name'] = $request->target->fileName;
+
+        if ($request->options->title !== null) {
+            $data['title'] = $request->options->title;
         }
 
-        if ($options->title !== null) {
-            $data['title'] = $options->title;
+        if ($request->options->subject !== null) {
+            $data['subject'] = $request->options->subject;
         }
 
-        if ($options->subject !== null) {
-            $data['subject'] = $options->subject;
+        if ($request->options->creator !== null) {
+            $data['creator'] = $request->options->creator;
         }
 
-        if ($options->creator !== null) {
-            $data['creator'] = $options->creator;
+        if ($request->options->author !== null) {
+            $data['author'] = $request->options->author;
         }
 
-        if ($options->author !== null) {
-            $data['author'] = $options->author;
-        }
-
-        if ($options->quality === Quality::Low) {
+        if ($request->options->quality === Quality::Low) {
             $data['low_quality'] = true;
         }
 
-        if ($options->unit !== Unit::Pixels) {
-            $data['custom_unit'] = $options->unit->value;
+        if ($request->options->unit !== Unit::Pixels) {
+            $data['custom_unit'] = $request->options->unit->value;
         }
 
-        if ($options->orientation !== Orientation::Portrait) {
-            $data['orientation'] = lcfirst($options->orientation->name);
+        if ($request->options->orientation !== Orientation::Portrait) {
+            $data['orientation'] = lcfirst($request->options->orientation->name);
         }
 
-        if ($options->pageSize !== PageSize::A4) {
-            $data['page_size'] = $options->pageSize->name;
+        if ($request->options->pageSize !== PageSize::A4) {
+            $data['page_size'] = $request->options->pageSize->name;
         }
 
-        if ($options->width !== null) {
-            $data['page_width'] = $options->width;
+        if ($request->options->width !== null) {
+            $data['page_width'] = $request->options->width;
         }
 
-        if ($options->height !== null) {
-            $data['page_height'] = $options->height;
+        if ($request->options->height !== null) {
+            $data['page_height'] = $request->options->height;
         }
 
-        if ($options->marginTop !== null) {
-            $data['margin_top'] = $options->marginTop;
+        if ($request->options->marginTop !== null) {
+            $data['margin_top'] = $request->options->marginTop;
         }
 
-        if ($options->marginBottom !== null) {
-            $data['margin_bottom'] = $options->marginBottom;
+        if ($request->options->marginBottom !== null) {
+            $data['margin_bottom'] = $request->options->marginBottom;
         }
 
-        if ($options->marginLeft !== null) {
-            $data['margin_left'] = $options->marginLeft;
+        if ($request->options->marginLeft !== null) {
+            $data['margin_left'] = $request->options->marginLeft;
         }
 
-        if ($options->marginRight !== null) {
-            $data['margin_right'] = $options->marginRight;
+        if ($request->options->marginRight !== null) {
+            $data['margin_right'] = $request->options->marginRight;
         }
 
-        if (null !== ($viewport = $options->viewport)) {
+        if (null !== ($viewport = $request->options->viewport)) {
             $data['viewport'] = $viewport;
         }
 
-        if ($options->dpi !== 96) {
-            $data['dpi'] = $options->dpi;
+        if ($request->options->dpi !== 96) {
+            $data['dpi'] = $request->options->dpi;
         }
 
-        if ($options->encryption !== null) {
-            $data['encryption'] = $options->encryption->value;
+        if ($request->options->encryption !== null) {
+            $data['encryption'] = $request->options->encryption->value;
         }
 
-        if ($options->ownerPassword !== null) {
-            $data['owner_password'] = $options->ownerPassword;
+        if ($request->options->ownerPassword !== null) {
+            $data['owner_password'] = $request->options->ownerPassword;
         }
 
-        if ($options->userPassword !== null) {
-            $data['user_password'] = $options->userPassword;
+        if ($request->options->userPassword !== null) {
+            $data['user_password'] = $request->options->userPassword;
         }
 
-        if ($options->responseMode === ResponseMode::Inline) {
+        if ($request->options->responseMode === ResponseMode::Inline) {
             $data['inline'] = true;
         }
 
-        if (!$options->cached) {
+        if (!$request->options->cached) {
             $data['force'] = true;
         }
 
-        if ($options->userAgent !== null) {
-            $data['user_agent'] = $options->userAgent;
+        if ($request->options->userAgent !== null) {
+            $data['user_agent'] = $request->options->userAgent;
         }
 
-        if ($options->httpUserName !== null) {
-            $data['auth_user'] = $options->httpUserName;
+        if ($request->options->httpUserName !== null) {
+            $data['auth_user'] = $request->options->httpUserName;
         }
 
-        if ($options->httpPassword !== null) {
-            $data['auth_pass'] = $options->httpPassword;
+        if ($request->options->httpPassword !== null) {
+            $data['auth_pass'] = $request->options->httpPassword;
         }
 
-        if (!$options->images) {
+        if (!$request->options->images) {
             $data['no_images'] = true;
         }
 
-        if (!$options->links) {
+        if (!$request->options->links) {
             $data['no_hyperlinks'] = true;
         }
 
-        if (!$options->backgrounds) {
+        if (!$request->options->backgrounds) {
             $data['no_backgrounds'] = true;
         }
 
-        if ($options->forms) {
+        if (!$request->options->javascript) {
+            $data['no_javascript'] = true;
+        }
+
+        if ($request->options->forms) {
             $data['forms'] = true;
         }
 
-        if ($options->printMedia) {
+        if ($request->options->printMedia) {
             $data['use_print_media'] = true;
         }
 
-        if ($options->greyscale) {
+        if ($request->options->greyscale) {
             $data['greyscale'] = true;
         }
 
-        if (!$options->allowPrint) {
+        if (!$request->options->allowPrint) {
             $data['no_print'] = true;
         }
 
-        if (!$options->allowModify) {
+        if (!$request->options->allowModify) {
             $data['no_modify'] = true;
         }
 
-        if (!$options->allowCopy) {
+        if (!$request->options->allowCopy) {
             $data['no_copy'] = true;
         }
 
@@ -213,17 +197,32 @@ class PdfLayer implements Adapter
             'form_params' => $postData
         ]);
 
-        if ($response->getHeaderLine('Content-Type') === 'application/pdf') {
-            return $this->hydro->responseToMemoryFile($response);
+        if ($response->getHeaderLine('Content-Type') !== 'application/pdf') {
+            /** @var array{error:array{info:string,code:int}} */
+            $json = json_decode($response->getBody()->getContents(), true);
+
+            throw Exceptional::Runtime(
+                message: $json['error']['info'],
+                code: $json['error']['code'],
+                data: $json
+            );
         }
 
-        /** @var array{error:array{info:string,code:int}} */
-        $json = json_decode($response->getBody()->getContents(), true);
+        $target = $request->target;
 
-        throw Exceptional::Runtime(
-            message: $json['error']['info'],
-            code: $json['error']['code'],
-            data: $json
+        if ($target instanceof TempFileTarget) {
+            $target->value = $this->hydro->responseToMemoryFile($response);
+            return $target;
+        }
+
+        if ($target instanceof LocalFileTarget) {
+            $target->value = $this->hydro->responseToFile($response, $target->value);
+            return $target;
+        }
+
+        throw Exceptional::ComponentUnavailable(
+            message: 'Unsupported output type: ' . get_class($target),
+            data: $target
         );
     }
 }

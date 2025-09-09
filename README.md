@@ -25,7 +25,107 @@ composer require decodelabs/imprint
 
 ## Usage
 
-Coming soon...
+Imprint uses the `Kingdom` `Service` interface for it's main entry point - if you are using a Service Container then you should provide an `Adapter` implementation to your Container at bootstrap:
+
+```php
+use DecodeLabs\Dovetail\Env;
+use DecodeLabs\Hydro;
+use DecodeLabs\Imprint\Adapter;
+use DecodeLabs\Imprint\Adapter\Doppio;
+
+$pandora->setFactory(
+    Adapter::class,
+    fn () => new Doppio(
+        $pandora->get(Hydro::class),
+        Env::asString('DOPPIO_API_KEY'),
+    )
+)
+```
+
+### Adapters
+
+Two adapters are currently supported: [Doppio](https://doppio.sh/) and [PdfLayer](https://pdflayer.com/). While more options will be added in the future, these two should cover most use cases. Doppio is likely to be the preferred choice as it uses headless Chromium to render the markup _exactly_ as it would in a browser.
+
+
+### Conversion
+
+The Imprint `Service` has a number of methods for converting HTML documents to PDF, depending on the source and expected output format.
+
+All of these methods accept an optional [`Options`](./src/Imprint/Options.php) object to control the conversion process. However, not all options are supported by all adapters - unsupported options will be ignored.
+
+```php
+use DecodeLabs\Imprint;
+use DecodeLabs\Imprint\Options;
+use DecodeLabs\Imprint\Options\PageSize;
+use DecodeLabs\Monarch;
+
+$imprint = Monarch::getService(Imprint::class);
+
+$options = new Options(
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    pageSize: PageSize::A5,
+);
+
+// Returns an Atlas File\Local which has been saved to disk
+$diskFile = $imprint->urlToLocalFile(
+    'https://example.com/document.html',
+    '/path/to/save/document.pdf', // Or Atlas File
+    $options
+);
+
+$diskFile = $imprint->fileToLocalFile(
+    '/path/to/document.html',
+    '/path/to/save/document.pdf', // Or Atlas File
+    $options
+);
+
+$diskFile = $imprint->stringToLocalFile(
+    '<h1>Hello, world!</h1>',
+    '/path/to/save/document.pdf', // Or Atlas File
+    $options
+);
+
+// Returns an Atlas MemoryFile which can be used directly or saved to disk
+$tempFile = $imprint->urlToTempFile(
+    'https://example.com/document.html',
+    'document.pdf',
+    $options
+);
+
+$tempFile = $imprint->fileToTempFile(
+    '/path/to/document.html',
+    'document.pdf',
+    $options
+);
+
+$tempFile = $imprint->stringToTempFile(
+    '<h1>Hello, world!</h1>',
+    'document.pdf',
+    $options
+);
+
+// Returns a temporary URL on the service, only if supported by the adapter
+$tempUrl = $imprint->urlToTempUrl(
+    'https://example.com/document.html',
+    'document.pdf',
+    $options
+);
+
+$tempUrl = $imprint->fileToTempUrl(
+    '/path/to/document.html',
+    'document.pdf',
+    $options
+);
+
+$tempUrl = $imprint->stringToTempUrl(
+    '<h1>Hello, world!</h1>',
+    'document.pdf',
+    $options
+);
+```
 
 ## Licensing
 

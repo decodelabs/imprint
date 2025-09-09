@@ -10,16 +10,14 @@ declare(strict_types=1);
 namespace DecodeLabs\Imprint;
 
 use DecodeLabs\Atlas\File;
+use DecodeLabs\Imprint\Request\Target;
 
 interface Adapter
 {
-    public function convertUrl(
-        string $url,
-        Options $options
-    ): File;
-
-    public function convertFile(
-        File $file,
-        Options $options
-    ): File;
+    /**
+     * @return Target<string>|Target<File>
+     */
+    public function convert(
+        Request $request
+    ): Target;
 }

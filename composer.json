@@ -13,7 +13,7 @@
 
         "decodelabs/atlas": "^0.14.1",
         "decodelabs/exceptional": "^0.6.3",
-        "decodelabs/hydro": "^0.2.0",
+        "decodelabs/hydro": "^0.2.3",
         "decodelabs/kingdom": "^0.1.1"
     },
     "require-dev": {

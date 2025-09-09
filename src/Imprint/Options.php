@@ -38,7 +38,6 @@ class Options
     }
 
     public function __construct(
-        public ?string $fileName = null,
         public ?string $title = null,
         public ?string $subject = null,
         public ?string $creator = null,
@@ -53,6 +52,7 @@ class Options
         public ?float $marginBottom = null,
         public ?float $marginLeft = null,
         public ?float $marginRight = null,
+        public ?string $referrer = null,
         public ?string $cssUrl = null,
         public ?Watermark $watermark = null,
         public ?int $viewportWidth = null,
@@ -69,6 +69,7 @@ class Options
         public bool $images = true,
         public bool $links = true,
         public bool $backgrounds = true,
+        public bool $javascript = true,
         public bool $forms = false,
         public bool $printMedia = true,
         public bool $greyscale = false,
