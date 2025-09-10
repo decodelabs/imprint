@@ -14,7 +14,7 @@
         "decodelabs/atlas": "^0.14.1",
         "decodelabs/exceptional": "^0.6.3",
         "decodelabs/hydro": "^0.2.3",
-        "decodelabs/kingdom": "^0.1.1"
+        "decodelabs/kingdom": "^0.2"
     },
     "require-dev": {
         "decodelabs/phpstan-decodelabs": "^0.7.0"
