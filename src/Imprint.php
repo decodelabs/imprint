@@ -257,4 +257,14 @@ class Imprint implements Service
 
         return $output->value;
     }
+
+    public function stringToTempUrl(
+        string $string,
+        ?string $fileName = null,
+        ?Options $options = null
+    ): string {
+        $file = MemoryFile::create();
+        $file->write($string);
+        return $this->fileToTempUrl($file, $fileName, $options);
+    }
 }
