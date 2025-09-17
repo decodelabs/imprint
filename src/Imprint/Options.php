@@ -70,6 +70,7 @@ class Options
         public bool $links = true,
         public bool $backgrounds = true,
         public bool $javascript = true,
+        public bool $fonts = true,
         public bool $forms = false,
         public bool $printMedia = true,
         public bool $greyscale = false,
