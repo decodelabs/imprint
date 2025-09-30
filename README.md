@@ -17,6 +17,8 @@ PDF generation is a notoriously difficult task requiring access to complex syste
 
 ## Installation
 
+This package requires PHP 8.4 or higher.
+
 Install via Composer:
 
 ```bash
