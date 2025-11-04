@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @package Imprint
- * @license http://opensource.org/licenses/MIT
+ * Imprint
+ * @license https://opensource.org/licenses/MIT
  */
 
 declare(strict_types=1);
