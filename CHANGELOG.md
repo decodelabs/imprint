@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 - Improved doc comment headers
+- Added AGENTS.md
+- Integrated Chorus dev dependency
 
 ---
 
@@ -40,3 +42,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented PdfLayer adapter
 - Implemented Doppio adapter
 - Restructured with Request interface
+
