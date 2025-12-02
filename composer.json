@@ -2,7 +2,7 @@
     "name": "decodelabs/imprint",
     "description": "PDF conversion API interface",
     "type": "library",
-    "keywords": [],
+    "keywords": [ ],
     "license": "MIT",
     "authors": [
         {
@@ -19,7 +19,7 @@
         "decodelabs/kingdom": "^0.2"
     },
     "require-dev": {
-        "decodelabs/chorus": "^0.1",
+        "decodelabs/chorus": ">0",
         "decodelabs/phpstan-decodelabs": "^0.7.0"
     },
     "autoload": {
