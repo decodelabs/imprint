@@ -155,6 +155,7 @@ class DocRaptor implements Adapter
 
         if (
             $target instanceof TempUrlTarget &&
+            // @phpstan-ignore-next-line
             $async
         ) {
             /** @var array{status_id:string} */
